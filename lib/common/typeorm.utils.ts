@@ -2,11 +2,10 @@ import { Logger, Type } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { delay, retryWhen, scan } from 'rxjs/operators';
 import {
-  AbstractRepository,
   Connection,
+  BaseEntity,
   ConnectionOptions,
   EntityManager,
-  Repository,
 } from 'typeorm';
 import { isNullOrUndefined } from 'util';
 import * as uuid from 'uuid/v4';
@@ -29,13 +28,10 @@ export function getRepositoryToken(
     throw new CircularDependencyException('@InjectRepository()');
   }
   const connectionPrefix = getConnectionPrefix(connection);
-  if (
-    entity.prototype instanceof Repository ||
-    entity.prototype instanceof AbstractRepository
-  ) {
-    return `${connectionPrefix}${getCustomRepositoryToken(entity)}`;
+  if (entity.prototype instanceof BaseEntity) {
+    return `${connectionPrefix}${entity.name}Repository`;
   }
-  return `${connectionPrefix}${entity.name}Repository`;
+  return `${connectionPrefix}${getCustomRepositoryToken(entity)}`;
 }
 
 /**
