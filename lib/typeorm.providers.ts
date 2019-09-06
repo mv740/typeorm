@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common';
 import {
   AbstractRepository,
+  BaseEntity,
   Connection,
   ConnectionOptions,
   Repository,
@@ -29,10 +30,10 @@ export function createTypeOrmProviders(
   const repositories = (entities || []).map(entity => ({
     provide: getRepositoryToken(entity, connection),
     useFactory: (connection: Connection) => {
-      if (entity.prototype instanceof Repository) {
-        return getCustomRepository(connection, entity) as any;
+      if (entity.prototype instanceof BaseEntity) {
+        return getRepository(connection, entity) as any;
       }
-      return getRepository(connection, entity) as any;
+      return getCustomRepository(connection, entity) as any;
     },
     inject: [getConnectionToken(connection)],
   }));
